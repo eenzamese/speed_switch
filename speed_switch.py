@@ -5,9 +5,8 @@ import logging
 import re
 import sys
 import sqlite3
-import pytz
 from os import listdir, sep
-from os.path import isfile, join, dirname, basename
+from os.path import dirname, basename
 import speedtest
 from statistics import mean
 from datetime import date, datetime, time, timedelta
@@ -38,7 +37,7 @@ logging.basicConfig(format=LOG_FMT_STRING,
                     level=logging.INFO, # NOTSET/DEBUG/INFO/WARNING/ERROR/CRITICAL
                     handlers=[logging.FileHandler(LOG_FILENAME),
                               logging.StreamHandler()])
-
+sys.exit()
 
 def tb_init(in_table_name, in_conn=None, in_c=None):
     """Get table initialization"""
@@ -57,8 +56,11 @@ def tb_init(in_table_name, in_conn=None, in_c=None):
     return result
 
 
+
 DB_NAME = f'{app_path}{sep}db_online.sqlite'
 TB_NAME = 'measures'
+
+
 
 
 # DB connection check
