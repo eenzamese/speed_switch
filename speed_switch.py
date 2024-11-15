@@ -78,8 +78,6 @@ if not tb_init_result['result']:
     sys.exit()
 
 
-os.system(ALLOW_ICMP_CMD)
-
 while True:
     servers = []
     threads = None
