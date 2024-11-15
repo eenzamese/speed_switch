@@ -13,6 +13,7 @@ from statistics import mean
 from datetime import date, datetime, time, timedelta
 
 
+# constants
 APP_TMT = 60
 LOG_START_TIME = re.sub(r"\W+", "_", str(time.ctime()))
 
