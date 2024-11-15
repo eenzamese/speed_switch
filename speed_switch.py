@@ -14,7 +14,7 @@ import datetime as dt
 from datetime import timedelta
 
 
-# constants
+# constants kate test
 APP_TMT = 60
 LOG_START_TIME = re.sub(r"\W+", "_", str(time.ctime()))
 
