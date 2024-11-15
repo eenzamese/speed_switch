@@ -17,6 +17,7 @@ from datetime import date, datetime, time, timedelta
 APP_TMT = 60
 LOG_START_TIME = re.sub(r"\W+", "_", str(time.ctime()))
 
+
 if getattr(sys, 'frozen', False):
     app_path = dirname(sys.executable)
     app_name = basename(sys.executable)
