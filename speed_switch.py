@@ -96,7 +96,6 @@ def conn_name(in_nic):
     return conn_name
 
 
-
 def tb_init(in_table_name, in_conn=None, in_c=None):
     """Get table initialization"""
     result = {'result': False, 'content': ''}
@@ -123,6 +122,15 @@ def tb_init(in_table_name, in_conn=None, in_c=None):
     result = {'result': True, 'content': ''}
     return result
 
+
+def change_nic_metric(in_conn_name):
+    cmd = f"nmcli conn modify {in_conn_name} ipv4.route-metric 50"
+    sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
+    (out, err) = sp.communicate()
+    if err:
+        logger.critical('NMCLI error')
+        sys.exit()
+    return out
 
 DB_NAME = f'{app_path}{sep}{app_name}_db.sqlite'
 TB_NAME = 'measures'
@@ -199,8 +207,8 @@ while True:
                 statement = f"update '{TB_NAME}_attempts' set fails=0;"
                 c.execute(statement)
             logger.info('Address: %s', gw_addr[0])
-            logger.info('Iface: %s', gw_addr[1])
-            print(conn_name(gw_addr[1]))
+            logger.info('Iface: %s', gw_addr[1][1])
+            print(conn_name(gw_addr[1][1]))
             print("200")
             time.sleep(SUCCESS_TMT)
     except Exception as ex: # pylint: disable=broad-exception-caught
