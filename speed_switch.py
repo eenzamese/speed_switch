@@ -13,6 +13,7 @@ import datetime as dt
 from datetime import timedelta
 import traceback
 import speedtest
+from netifaces import interfaces, ifaddresses, AF_INET
 
 
 # constants kate test
@@ -47,6 +48,15 @@ logging.basicConfig(format=LOG_FMT_STRING,
                     handlers=[logging.FileHandler(LOG_FILENAME),
                               logging.StreamHandler()])
 
+
+
+
+def ip4_addresses():
+    ip_list = []
+    for interface in interfaces():
+        for link in ifaddresses(interface)[AF_INET]:
+            ip_list.append(link['addr'])
+    return ip_list
 
 def tb_init(in_table_name, in_conn=None, in_c=None):
     """Get table initialization"""
