@@ -44,7 +44,7 @@ LOG_FILENAME = f'{LOG_DIR}{sep}{app_name}_{LOG_START_TIME}.log'
 log_handlers = [logging.StreamHandler()]
 
 if APP_RUNMODE == 'PROD':
-    log_handlers = log_handlers.append(logging.FileHandler(LOG_FILENAME))
+    log_handlers.append(logging.FileHandler(LOG_FILENAME))
 
 logger = logging.getLogger(APP_RUNMODE)
 logging.basicConfig(format=LOG_FMT_STRING,
@@ -164,9 +164,6 @@ while True:
             fails = int(fails[0])
             if fails>5:
                 print('301')
-                cmd = "nmcli -f name,device -t conn show"
-                out = subprocess.call(cmd,shell=True)
-                print(out)
                 with conn:
                     statement = f"update '{TB_NAME}_attempts' set fails=0;"
                     c.execute(statement)
@@ -183,7 +180,7 @@ while True:
             logger.info('Adress: %s', nic[0])
             logger.info('Iface: %s', nic[1])
             cmd = "nmcli -f name,device -t conn show"
-            out, err = subprocess.Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
+            out, err = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
             if out:
                 print([].append(out))
             print(out)
