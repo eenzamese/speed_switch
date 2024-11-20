@@ -108,6 +108,7 @@ while True:
             cd_statement = f'select speed from "{TB_NAME}" where date between date("{date_start_db}") and date("{date_end_db}")'
             print(cd_statement)
             measures = c.execute(cd_statement).fetchall()
+            print(measures)
         if len(measures):
             m_measures = mean([el[0] for el in measures])
         else:
