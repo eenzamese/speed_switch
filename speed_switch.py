@@ -11,6 +11,7 @@ from os.path import dirname, exists
 from statistics import mean
 import datetime as dt
 from datetime import timedelta
+import traceback
 import speedtest
 
 
@@ -117,40 +118,43 @@ while True:
         date_start_db = dt.datetime.now().date() - timedelta(days=5)
         date_end_db = dt.datetime.now().date() - timedelta(days=1)
         with conn:
-            cd_statement = f"select speed from '{TB_NAME}' \
-                           where date between date('{date_start_db}') and date('{date_end_db}')"
-            print(cd_statement)
+            cd_statement = f"select speed from '{TB_NAME}' where date between date('{date_start_db}') and date('{date_end_db}');"
+            logger.debug(cd_statement)
             measures = c.execute(cd_statement).fetchall()
         if measures:
             m_measures = mean([el[0] for el in measures])
+            logger.debug(f'm_measures {m_measures}')
         else:
             m_measures = cur_measure
         if cur_measure*10 < m_measures:
             with conn:
                 statement = f"select fails from '{TB_NAME}_attempts where rowid=1;"
                 fails = c.execute(cd_statement).fetchone()
+                logger.info(statement)
             if not fails:
                 logger.critical('DB corrupted')
                 sys.exit()
             fails = int(fails[0])
             if fails>5:
                 print('301')
+                with conn:
+                    statement = f"update '{TB_NAME}_attempts' set fails=0;"
+                    c.execute(statement)
             else:
                 with conn:
-                    statement = f"update '{TB_NAME}_attempts' \
-                                set fails={fails+1});"
+                    statement = f"update '{TB_NAME}_attempts' set fails={fails+1};"
                     c.execute(statement)
             time.sleep(FAIL_TMT)
             continue
         else:
             with conn:
-                statement = f"update '{TB_NAME}_attempts' \
-                            set fails=0);"
+                statement = f"update '{TB_NAME}_attempts' set fails=0;"
                 c.execute(statement)
             print("200")
             time.sleep(SUCCESS_TMT)
     except Exception as ex: # pylint: disable=broad-exception-caught
         logger.warning(str(ex))
+        logger.warning(traceback.format_exc())
         time.sleep(10)
         print("500")
         continue
