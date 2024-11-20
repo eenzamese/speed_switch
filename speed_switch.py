@@ -7,6 +7,7 @@ import sys
 import sqlite3
 import pdb
 import ipaddress
+import subprocess
 from os import sep, mkdir
 from os.path import dirname, exists
 from statistics import mean
@@ -163,6 +164,9 @@ while True:
             fails = int(fails[0])
             if fails>5:
                 print('301')
+                cmd = "nmcli -f name,device -t conn show"
+                out = subprocess.call(cmd,shell=True)
+                print(out)
                 with conn:
                     statement = f"update '{TB_NAME}_attempts' set fails=0;"
                     c.execute(statement)
@@ -178,6 +182,9 @@ while True:
                 c.execute(statement)
             logger.info('Adress: %s', nic[0])
             logger.info('Iface: %s', nic[1])
+            cmd = "nmcli -f name,device -t conn show"
+            out = subprocess.call(cmd,shell=True)
+            print(out)
             print("200")
             time.sleep(SUCCESS_TMT)
     except Exception as ex: # pylint: disable=broad-exception-caught
