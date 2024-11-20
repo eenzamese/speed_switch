@@ -220,7 +220,12 @@ while True:
         if measures:
             m_measures = mean([el[0] for el in measures])
         else:
-            m_measures = cur_measure
+            with conn:
+                cd_statement = f"select speed from {TB_NAME} where rowid in ((select max(rowid)from {TB_NAME}), (select max(rowid)from {TB_NAME})-1);"
+                logger.info(cd_statement)
+                measures = c.execute(cd_statement).fetchall()
+                logger.info('Mean measures is - %s', measures)
+                m_measures = mean([el[0] for el in measures])
         if cur_measure*10 < m_measures:
             with conn:
                 # pdb.set_trace()
