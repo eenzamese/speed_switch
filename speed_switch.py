@@ -91,9 +91,14 @@ def conn_name(in_nic):
     if out:
         out = out.decode('UTF-8').splitlines()
     conn_name = [el for el in out if in_nic in el]
+    logger.debug('Connection name %s', conn_name)
     if conn_name:
-        conn_name = conn_name[0].split(':')[0]
-    return conn_name
+        logger.debug('Connection name unparsed %s', conn_name)
+        conn_name = conn_name[0]
+        logger.debug('Connection name parsed %s', conn_name)
+        conn_name = conn_name.split(':')
+        logger.debug('Connection name final %s', conn_name)
+    return conn_name[0]
 
 
 def tb_init(in_table_name, in_conn=None, in_c=None):
@@ -124,7 +129,8 @@ def tb_init(in_table_name, in_conn=None, in_c=None):
 
 
 def change_nic_metric(in_conn_name):
-    cmd = f"nmcli conn modify {in_conn_name} ipv4.route-metric 50"
+    logger.debug('Change nic metric conn name %s', in_conn_name)
+    cmd = f"nmcli conn modify '{in_conn_name}' ipv4.route-metric 50"
     sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
     (out, err) = sp.communicate()
     if err:
