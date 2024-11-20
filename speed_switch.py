@@ -64,6 +64,39 @@ def ip4_addresses():
     return ip_list
 
 
+def gw4_address():
+    ipr = IPRoute()
+    gw = [el[1] for el in ipr.route("get",dst=INET_HOST)[0]["attrs"] if "RTA_GATEWAY" in el[0]]
+    if gw:
+        gw = gw[0]
+    else:
+        logger.critical('Traceroute failed')
+        sys.exit()
+    nic_arr = [el for el in ip_addrs if ipaddress.ip_address(gw) in ipaddress.ip_network(f'{el[0]}/24', False)]
+    if nic_arr:
+        nic = nic_arr[0]
+    else:
+        logger.critical('List ifaces failed')
+        sys.exit()
+    return (gw,nic)
+
+
+def conn_name(in_nic):
+    cmd = "nmcli -f name,device -t conn show"
+    sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
+    (out, err) = sp.communicate()
+    if err:
+        logger.critical('NMCLI error')
+        sys.exit()
+    if out:
+        out = out.decode('UTF-8').splitlines()
+    conn_name = [el for el in out if in_nic in el]
+    if conn_name:
+        conn_name = conn_name[0].split(':')[0]
+    return conn_name
+
+
+
 def tb_init(in_table_name, in_conn=None, in_c=None):
     """Get table initialization"""
     result = {'result': False, 'content': ''}
@@ -118,19 +151,7 @@ while True:
     THREADS = None
     try:
         ip_addrs = ip4_addresses()
-        ipr = IPRoute()
-        gw = [el[1] for el in ipr.route("get",dst=INET_HOST)[0]["attrs"] if "RTA_GATEWAY" in el[0]]
-        if gw:
-            gw = gw[0]
-        else:
-            logger.critical('Traceroute failed')
-            sys.exit()
-        nic_arr = [el for el in ip_addrs if ipaddress.ip_address(gw) in ipaddress.ip_network(f'{el[0]}/24', False)]
-        if nic_arr:
-            nic = nic_arr[0]
-        else:
-            logger.critical('List ifaces failed')
-            sys.exit()
+        gw_addr = gw4_address()
         s = speedtest.Speedtest(secure=True)
         s.get_servers(servers)
         s.get_best_server()
@@ -177,20 +198,9 @@ while True:
             with conn:
                 statement = f"update '{TB_NAME}_attempts' set fails=0;"
                 c.execute(statement)
-            logger.info('Adress: %s', nic[0])
-            logger.info('Iface: %s', nic[1])
-            cmd = "nmcli -f name,device -t conn show"
-            sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
-            (out, err) = sp.communicate()
-            if err:
-                logger.critical('NMCLI error')
-                sys.exit()
-            if out:
-                out = out.decode('UTF-8').splitlines()
-            conn_name = [el for el in out if nic[1] in el]
-            if conn_name:
-                conn_name = conn_name.split(':')[0]
-            print(conn_name)
+            logger.info('Address: %s', gw_addr[0])
+            logger.info('Iface: %s', gw_addr[1])
+            print(conn_name(gw_addr[1]))
             print("200")
             time.sleep(SUCCESS_TMT)
     except Exception as ex: # pylint: disable=broad-exception-caught
