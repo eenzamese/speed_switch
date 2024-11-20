@@ -102,10 +102,10 @@ while True:
                         values('{dt.datetime.now().date()}', \
                         '{cur_measure}');"
             c.execute(statement)
-        date_start_db = dt.datetime.now().date() - timedelta(days=1)
-        date_end_db = dt.datetime.now().date() - timedelta(days=5)
+        date_start_db = dt.datetime.now().date() - timedelta(days=5)
+        date_end_db = dt.datetime.now().date() - timedelta(days=1)
         with conn:
-            cd_statement = f'select speed from "{TB_NAME}" where date between date("{date_start_db}") and date("{date_end_db}")'
+            cd_statement = f"select speed from '{TB_NAME}' where date between date('{date_start_db}') and date('{date_end_db}')"
             print(cd_statement)
             measures = c.execute(cd_statement).fetchall()
             print(measures)
