@@ -74,7 +74,7 @@ def tb_init(in_table_name, in_conn=None, in_c=None):
                             '(date text, '
                             'speed float);')
             in_c.execute(ti_statement)
-        logger.debug(f'Tables "measures" created successfully')
+        logger.debug('Tables "measures" created successfully')
         with in_conn:
             ti_statement = (f'create table if not exists "{table_name}_attempts" '
                             '(date text, '
@@ -180,10 +180,17 @@ while True:
             logger.info('Adress: %s', nic[0])
             logger.info('Iface: %s', nic[1])
             cmd = "nmcli -f name,device -t conn show"
-            out, err = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
+            sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
+            (out, err) = sp.communicate()
+            if err:
+                logger.critical('NMCLI error')
+                sys.exit()
             if out:
-                print([].append(out))
-            print(out)
+                out = out.decode('UTF-8').splitlines()
+            conn_name = [el for el in out if nic[1] in el]
+            if conn_name:
+                conn_name = conn_name.split(':')[0]
+            print(conn_name)
             print("200")
             time.sleep(SUCCESS_TMT)
     except Exception as ex: # pylint: disable=broad-exception-caught
