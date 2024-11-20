@@ -23,6 +23,7 @@ from pyroute2 import IPRoute
 APP_TMT = 60
 SUCCESS_TMT = 600
 FAIL_TMT = 60
+INET_HOST = '8.8.8.8'
 LOG_START_TIME = re.sub(r"\W+", "_", str(time.ctime()))
 LOG_FMT_STRING = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
@@ -58,7 +59,6 @@ def ip4_addresses():
         if interface == 'lo':
             continue
         for link in ifaddresses(interface)[AF_INET]:
-            print(link)
             ip_list.append((link['addr'], interface))
     return ip_list
 
@@ -114,21 +114,27 @@ if not tb_init_result['result']:
 
 while True:
     servers = []
-    threads = None
+    THREADS = None
     try:
         ip_addrs = ip4_addresses()
-        ipr=IPRoute()
-        gw = [el[1] for el in ipr.route("get",dst="8.8.8.8")[0]["attrs"] if "RTA_GATEWAY" in el[0]]
+        ipr = IPRoute()
+        gw = [el[1] for el in ipr.route("get",dst=INET_HOST)[0]["attrs"] if "RTA_GATEWAY" in el[0]]
         if gw:
-            gw=gw[0]
-        nic_arr = [el for el in ip_addrs if ipaddress.ip_address(gw) in ipaddress.ip_network(f'{el[0]}/24', False)])
+            gw = gw[0]
+        else:
+            logger.critical('Traceroute failed')
+            sys.exit()
+        nic_arr = [el for el in ip_addrs if ipaddress.ip_address(gw) in ipaddress.ip_network(f'{el[0]}/24', False)]
         if nic_arr:
-            nic_arr = nic_arr[0]
+            nic = nic_arr[0]
+        else:
+            logger.critical('List ifaces failed')
+            sys.exit()
         s = speedtest.Speedtest(secure=True)
         s.get_servers(servers)
         s.get_best_server()
-        s.download(threads=threads)
-        s.upload(threads=threads)
+        s.download(threads=THREADS)
+        s.upload(threads=THREADS)
         s.results.share()
         cur_measure = s.results.dict()['download']
         with conn:
@@ -169,7 +175,9 @@ while True:
         else:
             with conn:
                 statement = f"update '{TB_NAME}_attempts' set fails=0;"
-                c.execute(statement)   
+                c.execute(statement)
+            logger.info('Adress: %s', nic[0])
+            logger.info('Iface: %s', nic[1])
             print("200")
             time.sleep(SUCCESS_TMT)
     except Exception as ex: # pylint: disable=broad-exception-caught
