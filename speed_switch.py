@@ -123,7 +123,6 @@ while True:
             measures = c.execute(cd_statement).fetchall()
         if measures:
             m_measures = mean([el[0] for el in measures])
-            logger.debug(f'm_measures {m_measures}')
         else:
             m_measures = cur_measure
         if cur_measure*10 < m_measures:
