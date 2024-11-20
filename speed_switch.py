@@ -130,7 +130,7 @@ def tb_init(in_table_name, in_conn=None, in_c=None):
 
 def change_nic_metric(in_conn_name, in_iface_name):
     logger.debug('Change nic metric conn name %s', in_conn_name)
-    cmd = f"nmcli conn modify '{in_conn_name}' ipv4.route-metric 50"
+    cmd = f"nmcli conn modify '{in_conn_name}' ipv4.route-metric 150"
     logger.info('Change NIC metric command - %s', cmd)
     sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
     (out, err) = sp.communicate()
@@ -138,22 +138,32 @@ def change_nic_metric(in_conn_name, in_iface_name):
         logger.critical('NMCLI error %s', err)
         sys.exit()
     time.sleep(1)
-    cmd = f"nmcli connection down {in_conn_name}"
-    logger.info('Switch off connection - %s', cmd)
+    cmd = f"nmcli device reapply {in_iface_name}"
+    logger.info('Reapply to device - %s', cmd)
     sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
     (out, err) = sp.communicate()
     time.sleep(1)
-    if err:
-        logger.critical('NMCLI error %s', err)
-        sys.exit()
-    cmd = f"nmcli connection up {in_conn_name}"
-    logger.info('Switch on connection - %s', cmd)
-    sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
-    (out, err) = sp.communicate()
-    time.sleep(1)
-    if err:
-        logger.critical('NMCLI error %s', err)
-        sys.exit()
+    # if err:
+    #     logger.critical('NMCLI error %s', err)
+    #     sys.exit()
+    # time.sleep(1)
+    # sys.exit()
+    # cmd = f"nmcli connection down '{in_conn_name}'"
+    # logger.info('Switch off connection - %s', cmd)
+    # sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
+    # (out, err) = sp.communicate()
+    # time.sleep(1)
+    # if err:
+    #     logger.critical('NMCLI error %s', err)
+    #     sys.exit()
+    # cmd = f"nmcli connection up '{in_conn_name}'"
+    # logger.info('Switch on connection - %s', cmd)
+    # sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
+    # (out, err) = sp.communicate()
+    # time.sleep(1)
+    # if err:
+    #     logger.critical('NMCLI error %s', err)
+    #     sys.exit()
     return out
 
 DB_NAME = f'{app_path}{sep}{app_name}_db.sqlite'
