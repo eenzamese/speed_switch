@@ -135,7 +135,7 @@ def tb_init(in_table_name, in_conn=None, in_c=None):
 
 def change_nic_metric(in_conn_name, in_iface_name):
     logger.debug('Change nic metric conn name %s', in_conn_name)
-    cmd = f"nmcli conn modify '{in_conn_name}' ipv4.route-metric 150"
+    cmd = f"nmcli conn modify '{in_conn_name}' ipv4.route-metric {int(time.time())}"
     logger.info('Change NIC metric command - %s', cmd)
     sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
     (out, err) = sp.communicate()
