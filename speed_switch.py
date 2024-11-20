@@ -6,18 +6,17 @@ import re
 import sys
 import sqlite3
 import pdb
-from os import sep
-from os.path import dirname
-import speedtest
+from os import sep, mkdir
+from os.path import dirname, exists
 from statistics import mean
 import datetime as dt
 from datetime import timedelta
+import speedtest
 
 
 # constants kate test
 APP_TMT = 60
 LOG_START_TIME = re.sub(r"\W+", "_", str(time.ctime()))
-
 LOG_FMT_STRING = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 if getattr(sys, 'frozen', False):
@@ -29,8 +28,10 @@ else:
     app_path = dirname(__file__)
     app_name = pathlib.Path(__file__).stem
     APP_RUNMODE = 'TEST'
-
-LOG_FILENAME = f'{app_path}{sep}{app_name}_{LOG_START_TIME}.log'
+LOG_DIR = f'{app_path}{sep}logs'
+if not exists(LOG_DIR):
+    mkdir(LOG_DIR)
+LOG_FILENAME = f'{LOG_DIR}{sep}{app_name}_{LOG_START_TIME}.log'
 log_handlers = [logging.StreamHandler()]
 
 if APP_RUNMODE == 'PROD':
