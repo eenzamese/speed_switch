@@ -6,6 +6,7 @@ import re
 import sys
 import sqlite3
 import pdb
+import ipaddress
 from os import sep, mkdir
 from os.path import dirname, exists
 from statistics import mean
@@ -14,6 +15,8 @@ from datetime import timedelta
 import traceback
 import speedtest
 from netifaces import interfaces, ifaddresses, AF_INET
+from pyroute2 import IPRoute
+
 
 
 # constants kate test
@@ -49,14 +52,16 @@ logging.basicConfig(format=LOG_FMT_STRING,
                               logging.StreamHandler()])
 
 
-
-
 def ip4_addresses():
     ip_list = []
     for interface in interfaces():
+        if interface == 'lo':
+            continue
         for link in ifaddresses(interface)[AF_INET]:
-            ip_list.append(link['addr'])
+            print(link)
+            ip_list.append((link['addr'], interface))
     return ip_list
+
 
 def tb_init(in_table_name, in_conn=None, in_c=None):
     """Get table initialization"""
@@ -89,8 +94,6 @@ DB_NAME = f'{app_path}{sep}{app_name}_db.sqlite'
 TB_NAME = 'measures'
 
 
-
-
 # DB connection check
 try:
     conn = sqlite3.connect(DB_NAME,  check_same_thread=False)
@@ -113,6 +116,14 @@ while True:
     servers = []
     threads = None
     try:
+        ip_addrs = ip4_addresses()
+        ipr=IPRoute()
+        gw = [el[1] for el in ipr.route("get",dst="8.8.8.8")[0]["attrs"] if "RTA_GATEWAY" in el[0]]
+        if gw:
+            gw=gw[0]
+        nic_arr = [el for el in ip_addrs if ipaddress.ip_address(gw) in ipaddress.ip_network(f'{el[0]}/24', False)])
+        if nic_arr:
+            nic_arr = nic_arr[0]
         s = speedtest.Speedtest(secure=True)
         s.get_servers(servers)
         s.get_best_server()
@@ -158,7 +169,7 @@ while True:
         else:
             with conn:
                 statement = f"update '{TB_NAME}_attempts' set fails=0;"
-                c.execute(statement)
+                c.execute(statement)   
             print("200")
             time.sleep(SUCCESS_TMT)
     except Exception as ex: # pylint: disable=broad-exception-caught
