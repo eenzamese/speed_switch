@@ -118,7 +118,7 @@ def tb_init(in_table_name, in_conn=None, in_c=None):
                             'fails interger);')
             in_c.execute(ti_statement)
         with in_conn:
-            ti_statement = f"insert into '{TB_NAME}_attempts' \
+            ti_statement = f"insert or ignore into '{TB_NAME}_attempts' \
                         values('{time.ctime()}', 0);"
             in_c.execute(ti_statement)
     except Exception as ex: # pylint: disable=broad-exception-caught
@@ -230,6 +230,8 @@ while True:
                 with conn:
                     statement = f"update '{TB_NAME}_attempts' set fails=0;"
                     c.execute(statement)
+                c_name = conn_name(gw_addr[1][1])
+                change_nic_metric(c_name, gw_addr[1][1])
             else:
                 with conn:
                     statement = f"update '{TB_NAME}_attempts' set fails={fails+1};"
@@ -242,8 +244,6 @@ while True:
                 c.execute(statement)
             logger.info('Address: %s', gw_addr[0])
             logger.info('Iface: %s', gw_addr[1][1])
-            c_name = conn_name(gw_addr[1][1])
-            change_nic_metric(c_name, gw_addr[1][1])
             print("200")
             time.sleep(SUCCESS_TMT)
     except Exception as ex: # pylint: disable=broad-exception-caught
