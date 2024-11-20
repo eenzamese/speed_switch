@@ -128,11 +128,29 @@ def tb_init(in_table_name, in_conn=None, in_c=None):
     return result
 
 
-def change_nic_metric(in_conn_name):
+def change_nic_metric(in_conn_name, in_iface_name):
     logger.debug('Change nic metric conn name %s', in_conn_name)
     cmd = f"nmcli conn modify '{in_conn_name}' ipv4.route-metric 50"
+    logger.info('Change NIC metric command - %s', cmd)
     sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
     (out, err) = sp.communicate()
+    if err:
+        logger.critical('NMCLI error %s', err)
+        sys.exit()
+    time.sleep(1)
+    cmd = f"nmcli connection down {in_conn_name}"
+    logger.info('Switch off connection - %s', cmd)
+    sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
+    (out, err) = sp.communicate()
+    time.sleep(1)
+    if err:
+        logger.critical('NMCLI error %s', err)
+        sys.exit()
+    cmd = f"nmcli connection up {in_conn_name}"
+    logger.info('Switch on connection - %s', cmd)
+    sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
+    (out, err) = sp.communicate()
+    time.sleep(1)
     if err:
         logger.critical('NMCLI error %s', err)
         sys.exit()
@@ -215,7 +233,7 @@ while True:
             logger.info('Address: %s', gw_addr[0])
             logger.info('Iface: %s', gw_addr[1][1])
             c_name = conn_name(gw_addr[1][1])
-            change_nic_metric(c_name)
+            change_nic_metric(c_name, gw_addr[1][1])
             print("200")
             time.sleep(SUCCESS_TMT)
     except Exception as ex: # pylint: disable=broad-exception-caught
