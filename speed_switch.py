@@ -7,7 +7,7 @@ import sys
 import sqlite3
 import pdb
 import ipaddress
-import subprocess
+from subprocess import Popen, PIPE
 from os import sep, mkdir
 from os.path import dirname, exists
 from statistics import mean
@@ -183,7 +183,9 @@ while True:
             logger.info('Adress: %s', nic[0])
             logger.info('Iface: %s', nic[1])
             cmd = "nmcli -f name,device -t conn show"
-            out = subprocess.call(cmd,shell=True)
+            out, err = subprocess.Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
+            if out:
+                print([].append(out))
             print(out)
             print("200")
             time.sleep(SUCCESS_TMT)
