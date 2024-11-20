@@ -113,7 +113,7 @@ def tb_init(in_table_name, in_conn=None, in_c=None):
             in_c.execute(ti_statement)
         logger.debug('Tables "measures" created successfully')
         with in_conn:
-            ti_statement = (f'create table if not exists "{table_name}_attempts" '
+            ti_statement = (f'create table if not exists {table_name}_attempts '
                             '(date text, '
                             'fails interger);')
             in_c.execute(ti_statement)
@@ -123,7 +123,7 @@ def tb_init(in_table_name, in_conn=None, in_c=None):
             logger.debug(cd_statement)
             if not fails:
                 with in_conn:
-                    ti_statement = f"insert into '{TB_NAME}_attempts' \
+                    ti_statement = f"insert into {TB_NAME}_attempts \
                                 values('{time.ctime()}', 0);"
                     in_c.execute(ti_statement)
     except Exception as ex: # pylint: disable=broad-exception-caught
@@ -223,7 +223,7 @@ while True:
             m_measures = cur_measure
         if cur_measure*10 < m_measures:
             with conn:
-                statement = f"select fails from '{TB_NAME}_attempts where rowid=1;"
+                statement = f"select fails from {TB_NAME}_attempts where rowid=1;"
                 fails = c.execute(cd_statement).fetchone()
                 logger.info(statement)
                 logger.info(fails)
@@ -235,7 +235,7 @@ while True:
             if fails>5:
                 print('301')
                 with conn:
-                    statement = f"update '{TB_NAME}_attempts' set fails=0;"
+                    statement = f"update {TB_NAME}_attempts set fails=0;"
                     c.execute(statement)
                 c_name = conn_name(gw_addr[1][1])
                 change_nic_metric(c_name, gw_addr[1][1])
@@ -244,13 +244,13 @@ while True:
                     c.execute(statement)
             else:
                 with conn:
-                    statement = f"update '{TB_NAME}_attempts' set fails={fails+1};"
+                    statement = f"update {TB_NAME}_attempts set fails={fails+1};"
                     c.execute(statement)
             time.sleep(FAIL_TMT)
             continue
         else:
             with conn:
-                statement = f"update '{TB_NAME}_attempts' set fails=0;"
+                statement = f"update {TB_NAME}_attempts set fails=0;"
                 c.execute(statement)
             logger.info('Address: %s', gw_addr[0])
             logger.info('Iface: %s', gw_addr[1][1])
