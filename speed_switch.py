@@ -226,10 +226,12 @@ while True:
                 statement = f"select fails from '{TB_NAME}_attempts where rowid=1;"
                 fails = c.execute(cd_statement).fetchone()
                 logger.info(statement)
+                logger.info(fails)
             if not fails:
-                logger.critical('DB corrupted')
+                logger.critical('DB corrupted while statement is %s', statement)
                 sys.exit()
             fails = int(fails[0])
+            logger.info('Amout of fails is %s', fails)
             if fails>5:
                 print('301')
                 with conn:
@@ -237,6 +239,9 @@ while True:
                     c.execute(statement)
                 c_name = conn_name(gw_addr[1][1])
                 change_nic_metric(c_name, gw_addr[1][1])
+                with conn:
+                    statement = f"delete from {TB_NAME};"
+                    c.execute(statement)
             else:
                 with conn:
                     statement = f"update '{TB_NAME}_attempts' set fails={fails+1};"
