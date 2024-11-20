@@ -117,10 +117,15 @@ def tb_init(in_table_name, in_conn=None, in_c=None):
                             '(date text, '
                             'fails interger);')
             in_c.execute(ti_statement)
-        with in_conn:
-            ti_statement = f"insert or ignore into '{TB_NAME}_attempts' \
-                        values('{time.ctime()}', 0);"
-            in_c.execute(ti_statement)
+        with conn:
+            cd_statement = f"select fails from {TB_NAME}_attempts where rowid=1;"
+            fails = c.execute(cd_statement).fetchone()
+            logger.debug(cd_statement)
+            if not fails:
+                with in_conn:
+                    ti_statement = f"insert into '{TB_NAME}_attempts' \
+                                values('{time.ctime()}', 0);"
+                    in_c.execute(ti_statement)
     except Exception as ex: # pylint: disable=broad-exception-caught
         result = {'result': False, 'content': str(ex)}
         return result
