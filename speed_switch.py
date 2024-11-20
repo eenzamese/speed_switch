@@ -86,7 +86,7 @@ def conn_name(in_nic):
     sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
     (out, err) = sp.communicate()
     if err:
-        logger.critical('NMCLI error')
+        logger.critical('NMCLI error %s', err)
         sys.exit()
     if out:
         out = out.decode('UTF-8').splitlines()
@@ -128,7 +128,7 @@ def change_nic_metric(in_conn_name):
     sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
     (out, err) = sp.communicate()
     if err:
-        logger.critical('NMCLI error')
+        logger.critical('NMCLI error %s', err)
         sys.exit()
     return out
 
@@ -208,7 +208,8 @@ while True:
                 c.execute(statement)
             logger.info('Address: %s', gw_addr[0])
             logger.info('Iface: %s', gw_addr[1][1])
-            print(conn_name(gw_addr[1][1]))
+            c_name = conn_name(gw_addr[1][1])
+            change_nic_metric(c_name)
             print("200")
             time.sleep(SUCCESS_TMT)
     except Exception as ex: # pylint: disable=broad-exception-caught
