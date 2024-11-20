@@ -223,16 +223,16 @@ while True:
             m_measures = cur_measure
         if cur_measure*10 < m_measures:
             with conn:
-                pdb.set_trace()
+                # pdb.set_trace()
                 statement = f"select fails from {TB_NAME}_attempts where rowid=1;"
                 fails = c.execute(statement).fetchone()
-                logger.info(statement)
-                logger.info(fails)
+                logger.debug('SQL statement - %s', statement)
+                logger.debug('Fails value - %s', fails)
             if not fails:
                 logger.critical('DB corrupted while statement is %s', statement)
                 sys.exit()
             fails = int(fails[0])
-            logger.info('Amout of fails is %s', fails)
+            logger.debug('Amout of fails is %s', fails)
             if fails > 5:
                 print('301')
                 with conn:
