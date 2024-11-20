@@ -16,6 +16,8 @@ import speedtest
 
 # constants kate test
 APP_TMT = 60
+SUCCESS_TMT = 600
+FAIL_TMT = 60
 LOG_START_TIME = re.sub(r"\W+", "_", str(time.ctime()))
 LOG_FMT_STRING = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
@@ -54,6 +56,12 @@ def tb_init(in_table_name, in_conn=None, in_c=None):
             ti_statement = (f'create table if not exists "{table_name}" '
                             '(date text, '
                             'speed float);')
+            in_c.execute(ti_statement)
+            ti_statement = (f'create table if not exists "{table_name}_attempts" '
+                            '(date text, '
+                            'fails interger);')
+            ti_statement = f"insert into '{TB_NAME}_attempts' \
+                        values('{time.ctime()}', 0);"
             in_c.execute(ti_statement)
     except Exception as ex: # pylint: disable=broad-exception-caught
         result = {'result': False, 'content': str(ex)}
@@ -105,20 +113,38 @@ while True:
         date_start_db = dt.datetime.now().date() - timedelta(days=5)
         date_end_db = dt.datetime.now().date() - timedelta(days=1)
         with conn:
-            cd_statement = f"select speed from '{TB_NAME}' where date between date('{date_start_db}') and date('{date_end_db}')"
+            cd_statement = f"select speed from '{TB_NAME}' \
+                           where date between date('{date_start_db}') and date('{date_end_db}')"
             print(cd_statement)
             measures = c.execute(cd_statement).fetchall()
-            print(measures)
-        if len(measures):
+        if measures:
             m_measures = mean([el[0] for el in measures])
         else:
             m_measures = cur_measure
         if cur_measure*10 < m_measures:
-            print("301")
+            with conn:
+                statement = f"select fails from '{TB_NAME}_attempts where rowid=1;"
+                fails = c.execute(cd_statement).fetchone()
+            if not fails:
+                logger.critical('DB corrupted')
+                sys.exit()
+            fails = int(fails[0])
+            if fails>5:
+                print('301')
+            else:
+                with conn:
+                    statement = f"update '{TB_NAME}_attempts' \
+                                set fails={fails+1});"
+                    c.execute(statement)
+            time.sleep(FAIL_TMT)
             continue
         else:
+            with conn:
+                statement = f"update '{TB_NAME}_attempts' \
+                            set fails=0);"
+                c.execute(statement)
             print("200")
-            time.sleep(600)
+            time.sleep(SUCCESS_TMT)
     except Exception as ex: # pylint: disable=broad-exception-caught
         logger.warning(str(ex))
         time.sleep(10)
