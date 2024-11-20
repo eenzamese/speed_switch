@@ -57,9 +57,13 @@ def tb_init(in_table_name, in_conn=None, in_c=None):
                             '(date text, '
                             'speed float);')
             in_c.execute(ti_statement)
+        logger.debug(f'Tables "measures" created successfully')
+        with in_conn:
             ti_statement = (f'create table if not exists "{table_name}_attempts" '
                             '(date text, '
                             'fails interger);')
+            in_c.execute(ti_statement)
+        with in_conn:
             ti_statement = f"insert into '{TB_NAME}_attempts' \
                         values('{time.ctime()}', 0);"
             in_c.execute(ti_statement)
