@@ -24,6 +24,7 @@ from pyroute2 import IPRoute
 APP_TMT = 60
 SUCCESS_TMT = 600
 FAIL_TMT = 60
+ERR_TMT = 10
 INET_HOST = '8.8.8.8'
 LOG_START_TIME = re.sub(r"\W+", "_", str(time.ctime()))
 LOG_FMT_STRING = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -198,7 +199,9 @@ while True:
     THREADS = None
     try:
         ip_addrs = ip4_addresses()
+        logger.info('Get IP addresses')
         gw_addr = gw4_address()
+        logger.info('Get GW address')
         s = speedtest.Speedtest(secure=True)
         s.get_servers(servers)
         s.get_best_server()
@@ -206,40 +209,52 @@ while True:
         s.upload(threads=THREADS)
         s.results.share()
         cur_measure = s.results.dict()['download']
+        if not cur_measure:
+            logger.critical('Speed service not working')
+            sys.exit()
+        logger.info('Measure Internet speed')
         with conn:
             statement = f"insert into '{TB_NAME}' \
                         values('{dt.datetime.now().date()}', \
                         '{cur_measure}');"
             c.execute(statement)
+        logger.info('Save measure')
         date_start_db = dt.datetime.now().date() - timedelta(days=5)
         date_end_db = dt.datetime.now().date() - timedelta(days=1)
+        logger.info('Get past measures from %s till %s', date_start_db, date_end_db)
         with conn:
             cd_statement = f"select speed from '{TB_NAME}' where date between date('{date_start_db}') and date('{date_end_db}');"
             logger.debug(cd_statement)
             measures = c.execute(cd_statement).fetchall()
+        logger.info('Past measures are - %s', measures)
         if measures:
             m_measures = mean([el[0] for el in measures])
+            logger.info('Measures mean value - %s', m_measures)
         else:
+            logger.info('Past measures not available. Get last measures')
             with conn:
                 cd_statement = f"select speed from {TB_NAME} where rowid in ((select max(rowid)from {TB_NAME}), (select max(rowid)from {TB_NAME})-1);"
                 logger.info(cd_statement)
                 measures = c.execute(cd_statement).fetchall()
-                logger.info('Mean measures is - %s', measures)
-                m_measures = mean([el[0] for el in measures])
+            logger.info('Last measures are - %s', measures)
+            m_measures = mean([el[0] for el in measures])
+            logger.info('Last measures mean is - %s', m_measures)
         if cur_measure*10 < m_measures:
+            logger.info('Connection speed downgraded')
             with conn:
                 # pdb.set_trace()
                 statement = f"select fails from {TB_NAME}_attempts where rowid=1;"
                 fails = c.execute(statement).fetchone()
-                logger.debug('SQL statement - %s', statement)
-                logger.debug('Fails value - %s', fails)
+            logger.debug('SQL statement - %s', statement)
+            logger.debug('Fails value - %s', fails)
+            logger.info('Try couple times')
             if not fails:
                 logger.critical('DB corrupted while statement is %s', statement)
                 sys.exit()
             fails = int(fails[0])
             logger.debug('Amout of fails is %s', fails)
             if fails > 5:
-                print('301')
+                logger.info('Switch NIC decision')
                 with conn:
                     statement = f"update {TB_NAME}_attempts set fails=0;"
                     c.execute(statement)
@@ -248,23 +263,27 @@ while True:
                 with conn:
                     statement = f"delete from {TB_NAME};"
                     c.execute(statement)
+                logger.info('Switch NIC copleted')
             else:
+                logger.info('Trying...')
                 with conn:
                     statement = f"update {TB_NAME}_attempts set fails={fails+1};"
                     c.execute(statement)
+            logger.info('Time to sleep %s', FAIL_TMT)
             time.sleep(FAIL_TMT)
             continue
         else:
+            logger.info('Speed is OK. Reset fails count')
             with conn:
                 statement = f"update {TB_NAME}_attempts set fails=0;"
                 c.execute(statement)
             logger.info('Address: %s', gw_addr[0])
             logger.info('Iface: %s', gw_addr[1][1])
-            print("200")
+            logger.info('Time to sleep %s', SUCCESS_TMT)
             time.sleep(SUCCESS_TMT)
     except Exception as ex: # pylint: disable=broad-exception-caught
         logger.warning(str(ex))
         logger.warning(traceback.format_exc())
-        time.sleep(10)
-        print("500")
+        logger.info('Time to sleep %s', SUCCESS_TMT)
+        time.sleep(ERR_TMT)
         continue
