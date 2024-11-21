@@ -252,7 +252,7 @@ while True:
                 logger.critical('DB corrupted while statement is %s', statement)
                 sys.exit()
             fails = int(fails[0])
-            logger.debug('Amout of fails is %s', fails)
+            logger.info('Amout of fails is %s', fails)
             if fails > 5:
                 logger.info('Switch NIC decision')
                 with conn:
