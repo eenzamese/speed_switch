@@ -34,7 +34,7 @@ Run python script
 
 eenzamese@gmail.com
 
-Project Link: [https://github.com/eenzamese/auto](https://github.com/eenzamese/auto)
+Project Link: [https://github.com/eenzamese/speed_switch](https://github.com/eenzamese/speed_switch)
 
 
 
