@@ -4,7 +4,7 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-[![Product Name Screen Shot][product-screen]
+[product-screen]
 
 Enter needed values to only-gui legacy app with python
 
