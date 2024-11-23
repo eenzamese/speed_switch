@@ -4,7 +4,7 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Product Name Screen Shot][product-screen]
 
 Enter needed values to only-gui legacy app with python
 
@@ -38,4 +38,4 @@ Project Link: [https://github.com/eenzamese/speed_switch](https://github.com/een
 
 
 
-[product-screenshot]: scheme/simple_scheme.drawio.png
+[product-screen]: scheme/simple_scheme.drawio.png
