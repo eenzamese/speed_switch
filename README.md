@@ -1,4 +1,3 @@
-<br />
 <div align="center"><h1 align="left">GUI auto input app</h1></div>
 
 
