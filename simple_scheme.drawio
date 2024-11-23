@@ -41,10 +41,10 @@
           <mxGeometry x="30" y="505" width="100" height="80" as="geometry" />
         </mxCell>
         <mxCell id="mwH9mIfmXYlc04-R90El-38" value="" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
-          <mxGeometry x="310" y="280" width="310" height="300" as="geometry" />
+          <mxGeometry x="310" y="280" width="270" height="300" as="geometry" />
         </mxCell>
         <mxCell id="mwH9mIfmXYlc04-R90El-39" value="speed history" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.database;whiteSpace=wrap;" vertex="1" parent="1">
-          <mxGeometry x="420" y="400" width="70" height="70" as="geometry" />
+          <mxGeometry x="450" y="400" width="70" height="70" as="geometry" />
         </mxCell>
         <mxCell id="mwH9mIfmXYlc04-R90El-59" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="mwH9mIfmXYlc04-R90El-40" target="mwH9mIfmXYlc04-R90El-39">
           <mxGeometry relative="1" as="geometry" />
@@ -72,7 +72,7 @@
           <mxGeometry x="320" y="302.5" width="70" height="35" as="geometry" />
         </mxCell>
         <mxCell id="mwH9mIfmXYlc04-R90El-51" value="&lt;div&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;default gw Router 1 metric 1&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;default gw Router 2 metric 2&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;&lt;br&gt;&lt;/i&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="430" y="340" width="180" height="30" as="geometry" />
+          <mxGeometry x="400" y="340" width="180" height="30" as="geometry" />
         </mxCell>
         <mxCell id="mwH9mIfmXYlc04-R90El-52" value="NIC 2" style="whiteSpace=wrap;html=1;align=center;" vertex="1" parent="1">
           <mxGeometry x="320" y="530" width="70" height="30" as="geometry" />
@@ -81,7 +81,7 @@
           <mxGeometry x="-130" y="390" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="mwH9mIfmXYlc04-R90El-70" value="&lt;b&gt;Home server&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="420" y="305" width="180" height="30" as="geometry" />
+          <mxGeometry x="395" y="302.5" width="180" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
