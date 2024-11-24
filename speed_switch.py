@@ -19,6 +19,7 @@ from netifaces import interfaces, ifaddresses, AF_INET
 from pyroute2 import IPRoute
 
 
+# inputs
 APP_TMT = 60
 SUCCESS_TMT = 600
 FAIL_TMT = 60
@@ -53,11 +54,11 @@ logger = logging.getLogger(APP_RUNMODE)
 logging.basicConfig(format=LOG_FMT_STRING,
                     datefmt='%d.%m.%Y %H:%M:%S',
                     level=logging.INFO, # NOTSET/DEBUG/INFO/WARNING/ERROR/CRITICAL
-                    handlers=[logging.FileHandler(LOG_FILENAME),
-                              logging.StreamHandler()])
+                    handlers=log_handlers
 
 
 def ip4_addresses():
+    """Get interface IP addresses"""
     ip_list = []
     for interface in interfaces():
         if interface == 'lo':
@@ -68,6 +69,7 @@ def ip4_addresses():
 
 
 def gw4_address():
+    """Get current gateway"""
     ipr = IPRoute()
     gw = [el[1] for el in ipr.route("get",dst=INET_HOST)[0]["attrs"] if "RTA_GATEWAY" in el[0]]
     if gw:
@@ -85,6 +87,7 @@ def gw4_address():
 
 
 def conn_name(in_nic):
+    """Get connection with Network Manager"""
     cmd = "nmcli -f name,device -t conn show"
     sp = Popen([cmd],stderr=PIPE, stdout=PIPE, shell=True)
     (out, err) = sp.communicate()
@@ -109,7 +112,7 @@ def conn_name(in_nic):
 
 
 def tb_init(in_table_name, in_conn=None, in_c=None):
-    """Get table initialization"""
+    """Table initialization"""
     result = {'result': False, 'content': ''}
     table_name = in_table_name
     try:
