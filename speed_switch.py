@@ -1,4 +1,4 @@
-"""Gates filter"""
+"""Speed switch"""
 import pathlib
 import time
 import logging
