@@ -19,13 +19,14 @@ from netifaces import interfaces, ifaddresses, AF_INET
 from pyroute2 import IPRoute
 
 
-
-# constants kate test
 APP_TMT = 60
 SUCCESS_TMT = 600
 FAIL_TMT = 60
 ERR_TMT = 10
 INET_HOST = '8.8.8.8'
+
+
+# logging params
 LOG_START_TIME = re.sub(r"\W+", "_", str(time.ctime()))
 LOG_FMT_STRING = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
@@ -41,6 +42,7 @@ else:
 LOG_DIR = f'{app_path}{sep}logs'
 if not exists(LOG_DIR):
     mkdir(LOG_DIR)
+
 LOG_FILENAME = f'{LOG_DIR}{sep}{app_name}_{LOG_START_TIME}.log'
 log_handlers = [logging.StreamHandler()]
 
@@ -99,7 +101,11 @@ def conn_name(in_nic):
         logger.debug('Connection name parsed %s', conn_name)
         conn_name = conn_name.split(':')
         logger.debug('Connection name final %s', conn_name)
-    return conn_name[0]
+        conn_name = conn_name[0]
+    else:
+        logger.critical('There are no available connections')
+        sys.exit()
+    return conn_name
 
 
 def tb_init(in_table_name, in_conn=None, in_c=None):
