@@ -5,27 +5,30 @@
 ## About The Project
 [![Product Name Screen Shot][product-screen]](https://example.com)
 
-Enter needed values to only-gui legacy app with python
+Switch active NIC based on Internet speed
 
 ## Installation
 
 Clone the repo
    ```sh
-   git clone https://github.com/eenzamese/auto.git
+   git clone https://github.com/eenzamese/speed_switch.git
    ```
 
 ## Usage
 
-Edit inputs in auto.py
+Edit inputs in speed_switch.py
 ```py
 # inputs
-WINDOW_TITLE_RGX = ".*Window name.*"
-INPUT = "some input string"
+APP_TMT = 60
+SUCCESS_TMT = 600
+FAIL_TMT = 60
+ERR_TMT = 10
+INET_HOST = '8.8.8.8'
 ```
 
 Run python script
    ```sh
-   python3 auto/auto.py
+   python3 speed_switch/speed_switch.py
    ```
 <!-- LICENSE -->
 
