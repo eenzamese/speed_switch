@@ -1,4 +1,4 @@
-<div align="center"><h1 align="left">GUI auto input app</h1></div>
+<div align="center"><h1 align="left">Switch active NIC based on Internet speed</h1></div>
 
 
 <!-- ABOUT THE PROJECT -->
