@@ -54,7 +54,7 @@ logger = logging.getLogger(APP_RUNMODE)
 logging.basicConfig(format=LOG_FMT_STRING,
                     datefmt='%d.%m.%Y %H:%M:%S',
                     level=logging.INFO, # NOTSET/DEBUG/INFO/WARNING/ERROR/CRITICAL
-                    handlers=log_handlers
+                    handlers=log_handlers)
 
 
 def ip4_addresses():
