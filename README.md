@@ -40,4 +40,4 @@ Project Link: [https://github.com/eenzamese/speed_switch](https://github.com/een
 
 
 
-[product-screen]: sheme/simple_scheme.drawio.png
+[product-screen]: scheme/simple_scheme.drawio.png
