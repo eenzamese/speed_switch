@@ -34,10 +34,11 @@ Run python script
 
 ## Contact
 
-eenzamese@gmail.com
+RU: eenzame@yandex.ru<br/>
+EN: eenzamse@gmail.com
 
-Project Link: [https://github.com/eenzamese/speed_switch](https://github.com/eenzamese/speed_switch)
-
+RU: Ссылка на проект: [https://github.com/eenzamese/speed_switch](https://github.com/eenzamese/speed_switch).<br/>
+EN: Project Link: [https://github.com/eenzamese/speed_switch](https://github.com/eenzamese/speed_switch)
 
 
 [product-screen]: scheme/simple_scheme.drawio.png
